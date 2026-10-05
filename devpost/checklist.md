@@ -19,7 +19,7 @@ Build mode: learn
   Learner check: Run `swift run StickerTranslator --check samples/<file>` on a couple of samples (or a real sticker you save from WhatsApp) and judge: would this explanation actually help you get her joke?
   Commit: `Add on-device sticker translation pipeline with --check dev mode`
 
-- [ ] **2. The app launches as a menu-bar app with a control panel that knows if it's ready**
+- [x] **2. The app launches as a menu-bar app with a control panel that knows if it's ready**
   Becomes usable: `./scripts/run.sh` builds and opens `StickerTranslator.app`. The control panel shows the toggle, "Language: Spanish → English," and a status line telling you if screen permission is missing, WhatsApp isn't open, or the model isn't available. The toggle unlocks only when everything is ready. Close the panel and the app stays in the menu bar.
   Why now: Screen permission only works for a real `.app` bundle, so it has to exist before we can capture WhatsApp. It's also the second unfamiliar piece: ad hoc signing and the permission prompt.
   PRD ref: `prd.md > The Core Journey` (steps 1–4), `prd.md > Control Panel and Toggle`, `prd.md > States and Boundaries`

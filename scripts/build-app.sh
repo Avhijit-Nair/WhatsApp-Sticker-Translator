@@ -13,5 +13,10 @@ cp "$BIN" "$APP/Contents/MacOS/StickerTranslator"
 cp Resources/Info.plist "$APP/Contents/Info.plist"
 cp Sources/StickerTranslator/Pipeline/slang-glossary.json "$APP/Contents/Resources/"
 
-codesign --force --sign - --identifier dev.stickertranslator.app "$APP"
+# A stable identity keeps the screen permission across rebuilds (see scripts/make-dev-cert.sh).
+IDENTITY="Sticker Translator Dev"
+if ! security find-certificate -c "$IDENTITY" >/dev/null 2>&1; then
+    IDENTITY="-" # ad hoc: macOS may ask for screen permission again after each rebuild
+fi
+codesign --force --sign "$IDENTITY" --identifier dev.stickertranslator.app "$APP"
 echo "Built $APP"

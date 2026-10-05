@@ -12,7 +12,7 @@ It has five pieces:
 1. **Control panel:** a small window with the "Always translate images" toggle and a status line. It hides to the menu bar.
 2. **Window watcher (ScreenCaptureKit):** while the toggle is on, it takes a snapshot of *only* the WhatsApp Desktop window a few times per second.
 3. **Text finder (Vision):** reads the text in each snapshot, groups nearby lines into one "sticker," and checks whether the text is Spanish.
-4. **Translator (Foundation Models, Apple's on-device AI model):** for each new Spanish sticker, it writes a literal translation and a short explanation of the meaning. Results are saved by sticker text, so each sticker is translated only once.
+4. **Translator (Foundation Models, Apple's on-device AI model):** for each new Spanish sticker, it looks up any known slang in a built-in **slang glossary**, then writes a literal translation and a short explanation of the meaning. Results are saved by sticker text, so each sticker is translated only once.
 5. **Tooltip overlay:** small dark floating windows placed next to each sticker on screen. On every snapshot they move to where the text is now and hide when it's gone.
 
 **Why this shape:** "re-scan, don't track." The app doesn't follow each sticker as it moves. It looks again a few times per second, and each tooltip goes wherever its text is now. That keeps it simple and survives scrolling, at the cost of tooltips trailing a fraction of a second behind fast scrolls.
@@ -37,10 +37,10 @@ PRD ref: `prd.md > The Core Journey`.
 - **ScreenCaptureKit**, to capture one window. https://developer.apple.com/documentation/screencapturekit
 - **Vision** (`VNRecognizeTextRequest` / `RecognizeTextRequest`, `es-ES`), for on-device text recognition. https://developer.apple.com/documentation/vision/recognizing-text-in-images
 - **NaturalLanguage** (`NLLanguageRecognizer`), to check whether the text is Spanish. https://developer.apple.com/documentation/naturallanguage/nllanguagerecognizer
-- **Foundation Models** (`SystemLanguageModel`, `LanguageModelSession`, `@Generable`), Apple's on-device model, for translation and meaning. https://developer.apple.com/documentation/foundationmodels
+- **Foundation Models** (`SystemLanguageModel` with `.permissiveContentTransformations` guardrails, `LanguageModelSession`, plain two-line `LITERAL:` / `MEANING:` output), Apple's on-device model, for translation and meaning. `@Generable` isn't used: its macro plugin ships only with full Xcode, and this Mac has Command Line Tools only. https://developer.apple.com/documentation/foundationmodels
 - **Swift Package Manager**, plus a small script that wraps the build into a `.app` bundle (needed for the menu bar and screen permission).
 
-Verified on the learner's Mac (2026-10-02): `SystemLanguageModel.default.availability` = **available**; Vision supports **es-ES** but not Hindi. **Not verified yet:** how good the model's slang explanations are. This is checked in the first build step (see `Decisions and Open Issues`).
+Verified on the learner's Mac (2026-10-02): `SystemLanguageModel.default.availability` = **available**; Vision supports **es-ES** but not Hindi. **Checked in build step 1 (2026-10-05):** on its own, the model gets Mexican slang meanings confidently wrong (for example "qué oso" → "How cool!"), and the default guardrails block most slang. With a short glossary note in the prompt, its meanings are correct. Hence the **Slang Glossary** component.
 
 **Accepted tradeoff:** Apple's model is small (about 3B parameters), so explanations may be shallower than a cloud model's. The learner chose this in exchange for privacy and no downloads.
 
@@ -93,8 +93,12 @@ Keeps a block only if `NLLanguageRecognizer` identifies Spanish as the dominant 
 PRD ref: `prd.md > Automatic Detection`.
 
 ### Translator
-A `LanguageModelSession` with instructions roughly like this: "You translate Spanish (especially Mexican slang) in chat stickers to English. Give a literal translation and a one-sentence explanation of what it really means and its tone." Uses guided generation into `StickerTranslation { literal: String, meaning: String }`. Runs one request at a time. Errors (refusal, guardrail, timeout) become a failed result.
+A `LanguageModelSession` (permissive guardrails, low temperature) with instructions roughly like this: "You're a friendly bilingual Mexican Spanish tutor. Given a sticker's text and glossary notes, reply in two lines: LITERAL (word-for-word English) and MEANING (one sentence on what it really means and its tone)." The reply is parsed into `StickerTranslation { literal, meaning }`. Runs one request at a time. Errors (refusal, guardrail, timeout) become a failed result.
 PRD ref: `prd.md > Translation Tooltip`, `prd.md > Privacy`.
+
+### Slang Glossary
+A curated JSON list (`slang-glossary.json`, about 60–100 common Mexican slang phrases), bundled with the app. Each entry has the phrase, any spelling variants, and a short note on what it really means. Before each translation, sticker text is normalized (lowercased, accents and punctuation stripped) and matched against the phrases on whole words. Matching notes go into the prompt, and the model is told to trust them. A glossary match also counts as evidence that the text is Spanish (short slang such as "qué oso" can fool the language check). Phrases not in the glossary fall back to the model's own knowledge, which may be wrong. Anyone can add entries by editing the JSON.
+PRD ref: `prd.md > Translation Tooltip` (meaning line).
 
 ### Translation Cache
 An in-memory dictionary keyed by **normalized block text** (lowercased, whitespace collapsed). Each entry is `translating | done(literal, meaning) | failed(message) | closed`. This is what makes tooltips reappear immediately after scrolling and what keeps closed tooltips closed.
@@ -117,6 +121,7 @@ All data is in memory. **Nothing is saved to disk, and nothing leaves the Mac.**
 | Readiness status | `AppState` | re-check | re-checked |
 | Latest frame + WhatsApp window frame | Window Watcher | ~3×/sec | gone |
 | Blocks `{text, box}` in the current frame | Text Finder output | each frame | gone |
+| Slang glossary `phrase → note` | bundled JSON, read-only | edited by hand | unchanged |
 | Cache `text → translating/done/failed/closed` | Translation Cache | translation finishes, ✕, Retry | **gone** (closed tooltips can come back; deferred in `prd.md > Deferred From the POC`) |
 | Tooltip panels `text → NSPanel` | Tooltip Overlay | each frame | gone |
 
@@ -134,6 +139,8 @@ hackathon/
 │   │   ├── TextFinder.swift              # Vision OCR + grouping into blocks
 │   │   ├── LanguageFilter.swift          # NaturalLanguage Spanish check
 │   │   ├── Translator.swift              # Foundation Models session + StickerTranslation
+│   │   ├── SlangGlossary.swift           # loads + matches the glossary
+│   │   └── slang-glossary.json           # curated Mexican slang notes (bundled resource)
 │   │   └── TranslationCache.swift        # text → state
 │   ├── Overlay/
 │   │   ├── OverlayController.swift       # coordinate mapping, panel placement/hiding
@@ -176,11 +183,13 @@ hackathon/
 - **Re-scan approach for scrolling:** accepted that tooltips trail slightly behind fast scrolls.
 - **Local run + demo video, no deployment or download.**
 
+- **Built-in slang glossary (build step 1):** the on-device model alone got slang meanings wrong. The learner chose a curated, on-device glossary over a bigger downloaded model or staging the demo around phrases it happens to get right. Unknown slang may still be explained wrongly.
+
 **Implementation details derived from those decisions (agent):** about 3 frames per second, cache keyed by normalized text, a separate floating panel per tooltip, the 0.6 language-confidence starting threshold, the SwiftPM + bundling script, and the `--check` dev mode.
 
 **Learner uncertainty discussed:** how the app tells sticker text from message text. We discussed that text recognition only sees "text." **Resolved** for the proof of concept by staging the demo (Spanish only in stickers) and recording the limitation. An accessibility-based check is an optional stretch.
 
-**Check early in the build (step 1):** the quality of the on-device explanations. Run the Dev Check Tool on 3–5 sample Spanish slang stickers and judge whether "meaning" is useful. If it's weak, adjust the prompt before building the overlay.
+**Checked early in the build (step 1):** explanation quality. It was weak without help, so we use the glossary (above).
 
 **Verify early:** whether ScreenCaptureKit captures it as a normal window; how well Vision reads stylized sticker fonts.
 

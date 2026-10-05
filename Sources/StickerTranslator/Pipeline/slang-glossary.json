@@ -1,0 +1,561 @@
+[
+  {
+    "phrase": "no manches",
+    "variants": [
+      "nomanches",
+      "nmms",
+      "no mames",
+      "nmames"
+    ],
+    "note": "\"No way!\" / \"You're kidding!\" — surprise or disbelief (\"no mames\" is the cruder version)."
+  },
+  {
+    "phrase": "güey",
+    "variants": [
+      "guey",
+      "wey",
+      "buey"
+    ],
+    "note": "\"dude\" / \"man\" — casual address between friends; can also mean \"idiot\" depending on tone."
+  },
+  {
+    "phrase": "qué oso",
+    "variants": [
+      "que oso",
+      "ke oso"
+    ],
+    "note": "\"How embarrassing!\" (literally \"what a bear\")."
+  },
+  {
+    "phrase": "oso",
+    "variants": [],
+    "note": "In slang, an embarrassing moment (\"hacer el oso\" = to embarrass yourself)."
+  },
+  {
+    "phrase": "qué padre",
+    "variants": [
+      "que padre",
+      "ke padre"
+    ],
+    "note": "\"How cool!\" — enthusiastic approval."
+  },
+  {
+    "phrase": "padrísimo",
+    "variants": [
+      "padrisimo"
+    ],
+    "note": "\"Super cool\" / \"awesome\"."
+  },
+  {
+    "phrase": "chido",
+    "variants": [
+      "chida",
+      "chidísimo",
+      "chidisimo"
+    ],
+    "note": "\"cool\" / \"nice\"."
+  },
+  {
+    "phrase": "qué onda",
+    "variants": [
+      "que onda",
+      "ke onda",
+      "q onda"
+    ],
+    "note": "\"What's up?\" — casual greeting."
+  },
+  {
+    "phrase": "neta",
+    "variants": [
+      "la neta",
+      "netas"
+    ],
+    "note": "\"For real?\" / \"Seriously?\" as a question, or \"the honest truth\" (\"la neta\")."
+  },
+  {
+    "phrase": "me vale",
+    "variants": [
+      "me vale madre",
+      "me vale madres",
+      "me vale verga",
+      "valemadrista"
+    ],
+    "note": "\"I don't care\" / \"Whatever\" — indifference; the longer versions are cruder."
+  },
+  {
+    "phrase": "está cañón",
+    "variants": [
+      "esta cañon",
+      "esta canon",
+      "está cañon",
+      "cañón"
+    ],
+    "note": "\"It's tough\" / \"That's rough\" — something difficult or intense (sometimes \"amazing\")."
+  },
+  {
+    "phrase": "crudo",
+    "variants": [
+      "cruda",
+      "bien crudo",
+      "bien cruda"
+    ],
+    "note": "In slang, \"hungover\" (literally \"raw\"). \"La cruda\" = the hangover."
+  },
+  {
+    "phrase": "aguas",
+    "variants": [
+      "aguas!"
+    ],
+    "note": "\"Watch out!\" / \"Careful!\" — a warning (literally \"waters\")."
+  },
+  {
+    "phrase": "ándale",
+    "variants": [
+      "andale",
+      "ándale pues",
+      "andale pues"
+    ],
+    "note": "\"Come on!\" / \"Hurry up!\" or \"Okay, deal\" — encouragement or agreement."
+  },
+  {
+    "phrase": "órale",
+    "variants": [
+      "orale"
+    ],
+    "note": "\"Whoa!\" / \"Okay, let's go!\" — surprise, approval, or agreement."
+  },
+  {
+    "phrase": "chale",
+    "variants": [],
+    "note": "\"Ugh\" / \"Oh man\" / \"Bummer\" — disappointment or annoyance."
+  },
+  {
+    "phrase": "qué pedo",
+    "variants": [
+      "que pedo",
+      "ke pedo",
+      "q pedo"
+    ],
+    "note": "\"What's up?\" (crude, friendly) or \"What the hell?\" depending on tone (literally \"what fart\")."
+  },
+  {
+    "phrase": "pedo",
+    "variants": [],
+    "note": "In slang, a problem or situation (\"no hay pedo\" = no problem); \"estar pedo\" = to be drunk."
+  },
+  {
+    "phrase": "no hay pedo",
+    "variants": [
+      "no hay bronca"
+    ],
+    "note": "\"No problem\" / \"No worries\"."
+  },
+  {
+    "phrase": "bronca",
+    "variants": [],
+    "note": "\"a problem\" or \"a fight\"."
+  },
+  {
+    "phrase": "chamba",
+    "variants": [
+      "chambear"
+    ],
+    "note": "\"work\" / \"a job\"; \"chambear\" = to work."
+  },
+  {
+    "phrase": "fresa",
+    "variants": [],
+    "note": "\"posh\" / \"preppy\" / \"stuck-up\" — a rich-kid stereotype (literally \"strawberry\")."
+  },
+  {
+    "phrase": "naco",
+    "variants": [
+      "naca"
+    ],
+    "note": "\"tacky\" / \"low-class\" — a mocking, somewhat offensive term."
+  },
+  {
+    "phrase": "chela",
+    "variants": [
+      "chelas",
+      "cheve",
+      "cheves"
+    ],
+    "note": "\"beer\"."
+  },
+  {
+    "phrase": "pisto",
+    "variants": [],
+    "note": "\"booze\" / alcoholic drinks."
+  },
+  {
+    "phrase": "peda",
+    "variants": [],
+    "note": "\"a party\" / \"a drinking session\"."
+  },
+  {
+    "phrase": "chingo",
+    "variants": [
+      "un chingo"
+    ],
+    "note": "\"a ton\" / \"a whole lot\" (crude but common, often affectionate: \"te quiero un chingo\" = I love you so much)."
+  },
+  {
+    "phrase": "chingón",
+    "variants": [
+      "chingona",
+      "chingonas",
+      "chingones"
+    ],
+    "note": "\"badass\" / \"awesome\" — strong (crude) praise."
+  },
+  {
+    "phrase": "a huevo",
+    "variants": [
+      "a webo",
+      "a huevo!",
+      "ahuevo"
+    ],
+    "note": "\"Hell yeah!\" / \"Of course!\" — enthusiastic yes (crude)."
+  },
+  {
+    "phrase": "qué hueva",
+    "variants": [
+      "que hueva",
+      "que flojera",
+      "qué flojera",
+      "hueva",
+      "flojera"
+    ],
+    "note": "\"I can't be bothered\" / \"So boring, too lazy\"."
+  },
+  {
+    "phrase": "sale",
+    "variants": [
+      "sale pues",
+      "va",
+      "va que va"
+    ],
+    "note": "\"Okay\" / \"Deal\" / \"Sounds good\"."
+  },
+  {
+    "phrase": "simón",
+    "variants": [
+      "simon"
+    ],
+    "note": "\"Yeah\" / \"Yep\" — playful yes."
+  },
+  {
+    "phrase": "nel",
+    "variants": [
+      "nel pastel"
+    ],
+    "note": "\"Nope\" — playful no."
+  },
+  {
+    "phrase": "chafa",
+    "variants": [],
+    "note": "\"lame\" / \"cheap\" / \"low-quality\"."
+  },
+  {
+    "phrase": "gacho",
+    "variants": [
+      "gacha",
+      "qué gacho",
+      "que gacho"
+    ],
+    "note": "\"mean\" / \"awful\" / \"not cool\"."
+  },
+  {
+    "phrase": "carnal",
+    "variants": [
+      "carnala"
+    ],
+    "note": "\"bro\" / \"close friend\" (literally \"of the flesh\")."
+  },
+  {
+    "phrase": "compa",
+    "variants": [],
+    "note": "\"buddy\" / \"pal\"."
+  },
+  {
+    "phrase": "morra",
+    "variants": [
+      "morro",
+      "morras",
+      "morros"
+    ],
+    "note": "\"girl\" / \"guy\" (young person) — casual."
+  },
+  {
+    "phrase": "chavo",
+    "variants": [
+      "chava",
+      "chavos",
+      "chavas"
+    ],
+    "note": "\"kid\" / \"young guy/girl\"."
+  },
+  {
+    "phrase": "escuincle",
+    "variants": [
+      "chamaco",
+      "chamaca"
+    ],
+    "note": "\"kid\" / \"brat\"."
+  },
+  {
+    "phrase": "mande",
+    "variants": [
+      "mande?"
+    ],
+    "note": "\"Pardon?\" / \"Yes?\" — polite way to answer or ask someone to repeat."
+  },
+  {
+    "phrase": "ahorita",
+    "variants": [
+      "ahoritita"
+    ],
+    "note": "\"right now\"... or famously \"later / eventually / maybe never\"."
+  },
+  {
+    "phrase": "al rato",
+    "variants": [],
+    "note": "\"later\" / \"in a bit\" — vague."
+  },
+  {
+    "phrase": "qué rollo",
+    "variants": [
+      "que rollo"
+    ],
+    "note": "\"What's up?\" / \"What's the deal?\"."
+  },
+  {
+    "phrase": "buena onda",
+    "variants": [
+      "bien buena onda"
+    ],
+    "note": "\"a good vibe\" / \"a nice person\"."
+  },
+  {
+    "phrase": "mala onda",
+    "variants": [
+      "qué mala onda",
+      "que mala onda"
+    ],
+    "note": "\"not cool\" / \"bad vibe\" / \"that's mean\"."
+  },
+  {
+    "phrase": "me late",
+    "variants": [],
+    "note": "\"I like it\" / \"I'm into it\"."
+  },
+  {
+    "phrase": "estoy hasta la madre",
+    "variants": [
+      "hasta la madre"
+    ],
+    "note": "\"I'm totally fed up\" or \"I'm completely drunk/full\" — exasperated, crude."
+  },
+  {
+    "phrase": "a toda madre",
+    "variants": [
+      "a todo dar",
+      "poca madre",
+      "de poca madre"
+    ],
+    "note": "\"awesome\" / \"amazing\" (crude)."
+  },
+  {
+    "phrase": "no inventes",
+    "variants": [
+      "no inventes!"
+    ],
+    "note": "\"No way!\" / \"Get out of here!\" — milder \"no manches\"."
+  },
+  {
+    "phrase": "chingada",
+    "variants": [
+      "vete a la chingada",
+      "a la chingada"
+    ],
+    "note": "\"go to hell\" / \"screw it\" — strong, crude."
+  },
+  {
+    "phrase": "pinche",
+    "variants": [],
+    "note": "\"damn\" / \"freaking\" — crude intensifier before a noun."
+  },
+  {
+    "phrase": "cuate",
+    "variants": [
+      "cuates"
+    ],
+    "note": "\"buddy\" / \"close friend\"."
+  },
+  {
+    "phrase": "lana",
+    "variants": [],
+    "note": "\"money\" (literally \"wool\")."
+  },
+  {
+    "phrase": "varo",
+    "variants": [
+      "varos",
+      "baro",
+      "baros"
+    ],
+    "note": "\"money\" / \"bucks\"."
+  },
+  {
+    "phrase": "codo",
+    "variants": [
+      "coda"
+    ],
+    "note": "\"stingy\" / \"cheap\" (literally \"elbow\")."
+  },
+  {
+    "phrase": "chismoso",
+    "variants": [
+      "chismosa",
+      "chisme"
+    ],
+    "note": "\"gossip\" / \"gossipy\"; \"chisme\" = juicy gossip."
+  },
+  {
+    "phrase": "te quiero",
+    "variants": [],
+    "note": "\"I love you\" / \"I care about you\" — affectionate, used with partners, friends and family."
+  },
+  {
+    "phrase": "te amo",
+    "variants": [],
+    "note": "\"I love you\" — deeper, romantic."
+  },
+  {
+    "phrase": "mi amor",
+    "variants": [
+      "amor",
+      "mi vida",
+      "mi cielo",
+      "mi rey",
+      "mi reina"
+    ],
+    "note": "\"my love\" / \"babe\" — terms of endearment."
+  },
+  {
+    "phrase": "gordo",
+    "variants": [
+      "gorda",
+      "gordito",
+      "gordita"
+    ],
+    "note": "Between partners, an affectionate pet name (\"chubby\" / \"sweetie\"), not an insult."
+  },
+  {
+    "phrase": "flaco",
+    "variants": [
+      "flaca"
+    ],
+    "note": "Affectionate nickname (\"skinny\") between partners or friends."
+  },
+  {
+    "phrase": "x2",
+    "variants": [
+      "por dos"
+    ],
+    "note": "\"Same here!\" / \"Me too\" (literally \"times two\")."
+  },
+  {
+    "phrase": "jajaja",
+    "variants": [
+      "jaja",
+      "jajajaja",
+      "jsjs",
+      "jejeje"
+    ],
+    "note": "Laughter, like \"hahaha\"."
+  },
+  {
+    "phrase": "qué tranza",
+    "variants": [
+      "que tranza",
+      "tranza"
+    ],
+    "note": "\"What's up?\" — street-y greeting; \"tranza\" alone = a scam or scammer."
+  },
+  {
+    "phrase": "qué show",
+    "variants": [
+      "que show"
+    ],
+    "note": "\"What's up?\" / \"What's going on?\"."
+  },
+  {
+    "phrase": "ni modo",
+    "variants": [],
+    "note": "\"Oh well\" / \"Nothing to be done\" — resigned acceptance."
+  },
+  {
+    "phrase": "ya ni llorar es bueno",
+    "variants": [],
+    "note": "\"No use crying about it now\" — resigned, dramatic."
+  },
+  {
+    "phrase": "agüitado",
+    "variants": [
+      "aguitado",
+      "agüitada",
+      "aguitada",
+      "me agüité",
+      "me aguite"
+    ],
+    "note": "\"bummed out\" / \"down\"."
+  },
+  {
+    "phrase": "fodongo",
+    "variants": [
+      "fodonga"
+    ],
+    "note": "\"lazy slob\" / dressed in comfy, scruffy clothes — teasing."
+  },
+  {
+    "phrase": "chiple",
+    "variants": [],
+    "note": "\"spoiled\" / \"pampered\"."
+  },
+  {
+    "phrase": "valió",
+    "variants": [
+      "valio",
+      "ya valió",
+      "ya valio",
+      "valió madre",
+      "valio madre",
+      "ya se valió"
+    ],
+    "note": "\"It's ruined\" / \"We're screwed\" — something went wrong."
+  },
+  {
+    "phrase": "me cae",
+    "variants": [
+      "me cae que",
+      "me cae bien",
+      "me cae mal"
+    ],
+    "note": "\"I swear\" (\"me cae que...\"); \"me cae bien/mal\" = I like/don't like that person."
+  },
+  {
+    "phrase": "tengo hambre",
+    "variants": [],
+    "note": "\"I'm hungry\"."
+  },
+  {
+    "phrase": "estoy muerto",
+    "variants": [
+      "estoy muerta",
+      "me muero"
+    ],
+    "note": "\"I'm dead tired\" or \"I'm dying (of laughter)\" — exaggeration."
+  }
+]

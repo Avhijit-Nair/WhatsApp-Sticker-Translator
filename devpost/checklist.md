@@ -5,7 +5,7 @@ status: approved
 
 # Build Checklist
 
-Build mode: [learn or fast — record once chosen; carry forward on resume]
+Build mode: learn
 
 ## Slices
 
@@ -14,7 +14,7 @@ Build mode: [learn or fast — record once chosen; carry forward on resume]
   Why now: This is the kernel and the biggest risk: is the on-device model good enough at explaining the joke? It also checks that Vision can read sticker fonts and that Foundation Models builds with this Mac's Command Line Tools (there's no full Xcode). If the meaning is weak, we tune the prompt before any overlay work. Scaffolding the SwiftPM package is part of this step.
   PRD ref: `prd.md > Translation Tooltip`, `prd.md > Automatic Detection`, `prd.md > Privacy`
   Spec ref: `spec.md > Text Finder`, `spec.md > Language Filter`, `spec.md > Translator`, `spec.md > Dev Check Tool`, `spec.md > File Structure`, `spec.md > Stack`
-  Build: Create `Package.swift` (macOS 26 executable) and `.gitignore` entries for `build/` and `.build/`. Add `TextFinder.swift` (Vision OCR, es-ES + en-US, line grouping into blocks), `LanguageFilter.swift` (NLLanguageRecognizer, 0.6 threshold, at least 2 letters), `Translator.swift` (`LanguageModelSession` + `@Generable StickerTranslation`), and `DevCheck.swift`. Generate 4–6 public-safe sample sticker images in `samples/` (Mexican slang, one English, one no-text). The learner can add real ones.
+  Build: Create `Package.swift` (macOS 26 executable) and `.gitignore` entries for `build/` and `.build/`. Add `TextFinder.swift` (Vision OCR, es-ES + en-US, line grouping into blocks), `LanguageFilter.swift` (NLLanguageRecognizer, 0.6 threshold, at least 2 letters), `SlangGlossary.swift` + `slang-glossary.json` (about 60–100 curated Mexican slang notes), `Translator.swift` (`LanguageModelSession` with permissive guardrails, glossary notes in the prompt, two-line output parsed into `StickerTranslation`), and `DevCheck.swift`. Generate 4–6 public-safe sample sticker images in `samples/` (Mexican slang, one English, one no-text). The learner can add real ones.
   Verify (mechanical): `swift build` succeeds; `--check` on each sample prints a translation for the Spanish ones and "skipped" for the English and no-text ones; I read the meanings and judge whether they explain slang rather than repeating the literal text.
   Learner check: Run `swift run StickerTranslator --check samples/<file>` on a couple of samples (or a real sticker you save from WhatsApp) and judge: would this explanation actually help you get her joke?
   Commit: `Add on-device sticker translation pipeline with --check dev mode`
@@ -71,3 +71,6 @@ Reflection:
 Activity mode: 
 
 ## Revisions
+
+- Translator uses plain two-line output instead of `@Generable`, with permissive guardrails — the `@Generable` macro plugin only ships with full Xcode (this Mac has Command Line Tools only), and the default guardrails rejected most slang, even "ya me voy a dormir".
+- Added a built-in Slang Glossary that feeds notes into the prompt (learner's choice) — the on-device model alone explained Mexican slang confidently wrongly ("qué oso" → "How cool!", "aguas" → "I'm thirsty").

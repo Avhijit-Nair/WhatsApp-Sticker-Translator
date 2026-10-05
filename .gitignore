@@ -5,3 +5,8 @@
 .env
 .env.*
 !.env.example
+
+# Build output
+/build/
+/.build/
+.DS_Store

@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PRD — Sticker Translator</title>
+<style>
+  :root { --ink:#1b1f24; --muted:#5b6570; --line:#d9dee3; --bg:#f7f8f9; --card:#fff;
+          --accent:#128c7e; --ok:#2e7d4f; --warn:#b07a14; --err:#a23b3b; --tip:#1b1f24; }
+  * { box-sizing:border-box; }
+  body { margin:0; font:16px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; color:var(--ink); background:var(--bg); }
+  main { max-width:920px; margin:0 auto; padding:40px 24px 80px; }
+  .badge { display:inline-block; font-size:12px; letter-spacing:.06em; text-transform:uppercase; padding:3px 10px; border-radius:999px; background:#e3f3f0; color:var(--accent); }
+  h1 { font-size:30px; margin:12px 0 6px; }
+  .lede { color:var(--muted); font-size:18px; margin:0 0 24px; }
+  section { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:20px 24px; margin:18px 0; }
+  h2 { font-size:15px; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); margin:0 0 12px; }
+  .expand { border-left:4px solid var(--accent); background:#f3fbf9; }
+  .expand p { margin:4px 0; }
+  svg { width:100%; height:auto; display:block; } svg text { font-family:inherit; }
+  /* stepper */
+  .stepper { display:grid; grid-template-columns:1fr 1fr; gap:20px; align-items:center; }
+  @media (max-width:700px){ .stepper{ grid-template-columns:1fr; } }
+  .controls { display:flex; gap:8px; align-items:center; margin-top:12px; }
+  button { font:inherit; border:1px solid var(--line); background:#fff; border-radius:8px; padding:6px 14px; cursor:pointer; }
+  button:hover { border-color:var(--accent); }
+  .stepnum { color:var(--muted); font-size:14px; margin-left:auto; }
+  .steptext h3 { margin:0 0 6px; font-size:18px; }
+  .steptext p { margin:0; color:var(--ink); }
+  .stage { background:#efeae2; border-radius:12px; border:1px solid var(--line); min-height:230px; position:relative; padding:14px; overflow:hidden; }
+  .panel { background:#fff; border:1px solid #cfd6dc; border-radius:10px; width:230px; padding:12px; font-size:13px; box-shadow:0 4px 14px rgba(0,0,0,.08); }
+  .panel .row { display:flex; justify-content:space-between; align-items:center; margin:6px 0; }
+  .switch { width:34px; height:20px; border-radius:999px; background:#c7cdd2; position:relative; }
+  .switch.on { background:var(--accent); }
+  .switch::after { content:""; position:absolute; top:2px; left:2px; width:16px; height:16px; border-radius:50%; background:#fff; transition:left .15s; }
+  .switch.on::after { left:16px; }
+  .status { margin-top:8px; padding:6px 8px; border-radius:6px; font-size:12px; }
+  .status.warn { background:#fdf3e1; color:#7a540c; } .status.ok { background:#eaf5ee; color:#1f5e3a; }
+  .sticker { position:absolute; left:18px; width:110px; height:96px; background:#fff; border-radius:10px; border:1px solid #ddd; display:flex; flex-direction:column; align-items:center; justify-content:center; font-weight:800; font-size:12px; transition:top .3s; }
+  .sticker span { font-size:28px; }
+  .tip { position:absolute; left:140px; width:220px; background:var(--tip); color:#fff; border-radius:10px; padding:10px 12px; font-size:12.5px; transition:top .3s, opacity .2s; }
+  .tip .k { color:#9fe3d6; font-size:10.5px; font-weight:700; letter-spacing:.05em; }
+  .tip .x { position:absolute; top:6px; right:9px; color:#b8c0c8; font-size:12px; }
+  .tip .err { color:#ffb4b4; }
+  .tip .retry { display:inline-block; margin-top:6px; border:1px solid #556; border-radius:6px; padding:1px 8px; font-size:11px; }
+  .menubar { position:absolute; top:0; left:0; right:0; height:22px; background:#e9ecef; font-size:11px; display:flex; justify-content:flex-end; align-items:center; padding:0 10px; gap:10px; color:#333; }
+  .hidden { display:none; }
+  /* reveals */
+  details { border:1px solid var(--line); border-radius:10px; margin:10px 0; background:#fff; }
+  summary { cursor:pointer; padding:12px 16px; font-weight:600; list-style:none; display:flex; gap:10px; align-items:center; }
+  summary::-webkit-details-marker { display:none; }
+  summary::before { content:"▸"; transition:transform .15s; } details[open] summary::before { transform:rotate(90deg); }
+  details > div { padding:0 18px 14px 40px; }
+  ul.check { list-style:none; padding:0; margin:0; } ul.check li { padding-left:24px; position:relative; margin:4px 0; }
+  ul.check li::before { content:"☐"; position:absolute; left:0; color:var(--accent); }
+  table { width:100%; border-collapse:collapse; font-size:14px; } td,th { text-align:left; padding:8px 10px; border-bottom:1px solid var(--line); vertical-align:top; }
+  th { color:var(--muted); font-weight:600; font-size:13px; text-transform:uppercase; letter-spacing:.04em; }
+  .pill { display:inline-block; font-size:12px; border-radius:999px; padding:1px 8px; }
+  .p-ok{background:#eaf5ee;color:var(--ok)} .p-warn{background:#fdf3e1;color:var(--warn)} .p-err{background:#fbeaea;color:var(--err)} .p-n{background:#eef1f3;color:var(--muted)}
+  .asm { color:var(--warn); font-size:13px; }
+  footer { color:var(--muted); font-size:13px; margin-top:30px; }
+</style>
+</head>
+<body>
+<main>
+  <span class="badge" id="badge">PRD · approved</span>
+  <h1>Sticker Translator</h1>
+  <p class="lede">A Mac app that sits quietly alongside WhatsApp Desktop and automatically labels Spanish stickers with an English translation and what they really mean, entirely on-device.</p>
+
+  <section class="expand">
+    <h2>Scope → PRD</h2>
+    <p>Scope said: <em>"a small label shows up next to it."</em></p>
+    <p>Now we know exactly what that means: a dark tooltip that says <strong>Translating…</strong>, then shows <strong>literal + meaning</strong>, follows the sticker as you scroll, hides off-screen, closes with ✕ and stays closed, and shows <strong>error + retry</strong> on failure. Stickers with no text or English text get nothing.</p>
+  </section>
+
+  <section>
+    <h2>The core journey: step through it</h2>
+    <div class="stepper">
+      <div class="stage" id="stage">
+        <div class="menubar hidden" id="menubar"><span>🔤 Sticker Translator</span><span>Wi-Fi</span><span>12:41</span></div>
+        <div class="panel" id="panel">
+          <div style="font-weight:700;margin-bottom:6px">Sticker Translator</div>
+          <div class="row"><span>Always translate images</span><span class="switch" id="sw"></span></div>
+          <div class="row"><span>Language</span><span>Spanish → English</span></div>
+          <div class="status warn" id="status">Screen permission required. Can't operate until it's granted.</div>
+        </div>
+        <div class="sticker hidden" id="sticker" style="top:60px"><span>🐸</span>¡NO MANCHES!</div>
+        <div class="tip hidden" id="tip" style="top:60px"><span class="x">✕</span><div id="tipbody"></div></div>
+      </div>
+      <div class="steptext">
+        <h3 id="st-title"></h3>
+        <p id="st-body"></p>
+        <div class="controls">
+          <button id="prev">← Back</button><button id="next">Next →</button>
+          <span class="stepnum" id="st-num"></span>
+        </div>
+      </div>
+    </div>
+    <noscript><p>Steps: open → permission/WhatsApp check → toggle on → hides to menu bar → chat → Translating… → literal + meaning → follows scroll, hides off-screen → ✕ closes and stays closed → success.</p></noscript>
+    <p style="color:var(--muted);font-size:13px;margin:12px 0 0">Illustrative mockup only. The example sticker and text are placeholders.</p>
+  </section>
+
+  <section>
+    <h2>Surfaces</h2>
+    <svg viewBox="0 0 860 150" role="img" aria-label="Control panel hides to menu bar; overlay draws tooltips on WhatsApp Desktop">
+      <defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0L10,5L0,10z" fill="#5b6570"/></marker></defs>
+      <g font-size="13">
+        <rect x="10" y="30" width="220" height="90" rx="10" fill="#fff" stroke="#5b6570"/>
+        <text x="120" y="58" text-anchor="middle" font-weight="700">Control Panel</text>
+        <text x="120" y="80" text-anchor="middle">toggle · Spanish → English</text>
+        <text x="120" y="98" text-anchor="middle">status messages</text>
+        <rect x="320" y="45" width="180" height="60" rx="10" fill="#eef1f3" stroke="#5b6570"/>
+        <text x="410" y="72" text-anchor="middle" font-weight="700">Menu bar</text>
+        <text x="410" y="90" text-anchor="middle">hidden, reopen anytime</text>
+        <rect x="590" y="20" width="260" height="110" rx="10" fill="#efeae2" stroke="#128c7e"/>
+        <text x="720" y="46" text-anchor="middle" font-weight="700" fill="#0e6f64">Overlay on WhatsApp Desktop</text>
+        <rect x="610" y="60" width="60" height="55" rx="6" fill="#fff" stroke="#ccc"/>
+        <rect x="680" y="64" width="150" height="46" rx="8" fill="#1b1f24"/>
+        <text x="755" y="92" text-anchor="middle" fill="#fff" font-size="12">tooltip ✕</text>
+        <line x1="230" y1="75" x2="318" y2="75" stroke="#5b6570" stroke-width="2" marker-end="url(#a)"/>
+        <text x="274" y="66" text-anchor="middle" fill="#5b6570" font-size="11">hide</text>
+        <line x1="500" y1="75" x2="588" y2="75" stroke="#5b6570" stroke-width="2" marker-end="url(#a)"/>
+        <text x="544" y="66" text-anchor="middle" fill="#5b6570" font-size="11">runs</text>
+      </g>
+    </svg>
+  </section>
+
+  <section>
+    <h2>Tooltip states</h2>
+    <table>
+      <tr><th>Situation</th><th>What the user sees</th></tr>
+      <tr><td><span class="pill p-n">Working</span></td><td>"Translating… please wait a moment."</td></tr>
+      <tr><td><span class="pill p-ok">Translated</span></td><td>LITERAL line + MEANING line, ✕ in the corner</td></tr>
+      <tr><td><span class="pill p-err">Failed / unreadable</span></td><td>Error message + retry button</td></tr>
+      <tr><td><span class="pill p-n">No text / English</span></td><td>No tooltip</td></tr>
+      <tr><td><span class="pill p-n">Closed with ✕</span></td><td>Stays closed for that sticker this session</td></tr>
+      <tr><td><span class="pill p-n">Scrolled off-screen</span></td><td>Hidden; reappears when the sticker returns</td></tr>
+    </table>
+  </section>
+
+  <section>
+    <h2>Control panel states</h2>
+    <table>
+      <tr><th>Situation</th><th>What the user sees</th></tr>
+      <tr><td><span class="pill p-warn">Permission missing</span></td><td>Screen permission is required; can't operate until it's granted</td></tr>
+      <tr><td><span class="pill p-warn">WhatsApp not open</span></td><td>Message in the same status area <span class="asm">(assumption)</span></td></tr>
+      <tr><td><span class="pill p-n">Toggle off</span></td><td>No detection, no tooltips <span class="asm">(assumption: existing tooltips removed)</span></td></tr>
+      <tr><td><span class="pill p-ok">Ready / running</span></td><td>Status shows that it's working</td></tr>
+    </table>
+  </section>
+
+  <section>
+    <h2>Acceptance criteria</h2>
+    <details open><summary>Control panel and toggle</summary><div><ul class="check">
+      <li>Turning on "Always translate images" starts automatic translation</li>
+      <li>Turning it off stops translation and removes tooltips <span class="asm">(assumption)</span></li>
+      <li>Panel hides to the menu bar and reopens from there</li>
+      <li>Language shows Spanish → English</li></ul></div></details>
+    <details><summary>Automatic detection</summary><div><ul class="check">
+      <li>Visible Spanish stickers and images get a tooltip without the user doing anything</li>
+      <li>Stickers with no text or English text get no tooltip</li></ul></div></details>
+    <details><summary>Translation tooltip</summary><div><ul class="check">
+      <li>Shows "Translating… please wait a moment" while working</li>
+      <li>Then shows the literal translation + a short meaning explanation</li>
+      <li>Sits beside the sticker, never covering it</li>
+      <li>✕ closes it; it stays closed after scrolling away and back</li>
+      <li>On failure: error message + retry, and retry tries again</li></ul></div></details>
+    <details><summary>Scroll tracking</summary><div><ul class="check">
+      <li>Tooltips move with their sticker while scrolling</li>
+      <li>They hide when the sticker leaves the visible area and reappear when it returns</li></ul></div></details>
+    <details><summary>Privacy</summary><div><ul class="check">
+      <li>Translation works with the network turned off</li></ul></div></details>
+  </section>
+
+  <section>
+    <h2>Boundary</h2>
+    <details><summary>Deferred from the POC</summary><div><ul>
+      <li><strong>Hindi and other languages:</strong> on-device Hindi script reading is riskier</li>
+      <li><strong>Remembering closed tooltips across restarts</strong></li>
+      <li><strong>Android / Pixel overlay</strong></li></ul></div></details>
+    <details><summary>Non-goals</summary><div><ul>
+      <li>iPhone (no overlays allowed) · cloud AI (privacy) · redrawing stickers · plain-text translation</li></ul></div></details>
+    <details><summary>Open questions (none block the spec)</summary><div><ul>
+      <li>Show both lines when literal = meaning? (build)</li>
+      <li>Does the toggle stay on after a restart? Assumption: starts off. (build)</li>
+      <li>Is on-device explanation quality good enough? (<code>4-spec</code>, check early)</li></ul></div></details>
+  </section>
+
+  <footer>Companion to <code>devpost/prd.md</code> (the Markdown copy is the main one).</footer>
+</main>
+<script>
+const steps = [
+  {t:"Open the app", b:"A small control panel appears.", s:{panel:1,status:"warn",msg:"Screen permission required. Can't operate until it's granted.",sw:0}},
+  {t:"First use: checks", b:"If screen permission is missing or WhatsApp isn't open, the panel says so and nothing runs.", s:{panel:1,status:"warn",msg:"WhatsApp Desktop isn't open.",sw:0}},
+  {t:"Turn it on", b:"Once ready, flip \"Always translate images.\"", s:{panel:1,status:"ok",msg:"Ready. Translating visible stickers.",sw:1}},
+  {t:"Get out of the way", b:"The panel hides into the menu bar. WhatsApp stays in front.", s:{menubar:1}},
+  {t:"A sticker arrives", b:"A Spanish sticker appears. A dark tooltip shows up beside it right away.", s:{menubar:1,sticker:60,tip:"loading"}},
+  {t:"Translated", b:"The tooltip shows the literal translation and what it really means.", s:{menubar:1,sticker:60,tip:"done"}},
+  {t:"If it fails", b:"Unreadable or failed: an error message with a retry button.", s:{menubar:1,sticker:60,tip:"err"}},
+  {t:"Scrolling", b:"The tooltip moves with its sticker, hides when it scrolls off-screen, and returns when it's back.", s:{menubar:1,sticker:120,tip:"done",tipTop:120}},
+  {t:"Close it", b:"✕ closes the tooltip. It stays closed, even after scrolling away and back.", s:{menubar:1,sticker:60}},
+  {t:"Success", b:"In a staged, funny exchange, the joke gets explained without you touching anything.", s:{menubar:1,sticker:60,tip:"done"}}
+];
+let i=0; const $=id=>document.getElementById(id);
+function render(){
+  const st=steps[i], s=st.s;
+  $("st-title").textContent=st.t; $("st-body").textContent=st.b; $("st-num").textContent=(i+1)+" / "+steps.length;
+  $("panel").classList.toggle("hidden",!s.panel); $("menubar").classList.toggle("hidden",!s.menubar);
+  if(s.panel){ $("sw").classList.toggle("on",!!s.sw); const el=$("status"); el.className="status "+s.status; el.textContent=s.msg; }
+  $("sticker").classList.toggle("hidden",!s.sticker); if(s.sticker) $("sticker").style.top=s.sticker+"px";
+  const tip=$("tip"); tip.classList.toggle("hidden",!s.tip); tip.style.top=(s.tipTop||s.sticker||60)+"px";
+  const body={loading:"Translating… please wait a moment.",
+    done:'<div class="k">LITERAL</div>"Don\'t stain!"<div class="k" style="margin-top:6px">MEANING</div>"No way!" (playful disbelief, Mexican slang)',
+    err:'<div class="err">Couldn\'t translate this sticker.</div><span class="retry">↻ Retry</span>'}[s.tip]||"";
+  $("tipbody").innerHTML=body;
+  $("prev").disabled=i===0; $("next").disabled=i===steps.length-1;
+}
+$("prev").onclick=()=>{if(i>0){i--;render();}}; $("next").onclick=()=>{if(i<steps.length-1){i++;render();}};
+render();
+</script>
+</body>
+</html>

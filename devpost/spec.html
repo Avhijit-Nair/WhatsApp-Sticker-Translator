@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Spec — Sticker Translator</title>
+<style>
+  :root { --ink:#1b1f24; --muted:#5b6570; --line:#d9dee3; --bg:#f7f8f9; --card:#fff; --accent:#128c7e; --warn:#b07a14; --err:#a23b3b; --ok:#2e7d4f; }
+  * { box-sizing:border-box; }
+  body { margin:0; font:16px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; color:var(--ink); background:var(--bg); }
+  main { max-width:960px; margin:0 auto; padding:40px 24px 80px; }
+  .badge { display:inline-block; font-size:12px; letter-spacing:.06em; text-transform:uppercase; padding:3px 10px; border-radius:999px; background:#e3f3f0; color:var(--accent); }
+  h1 { font-size:30px; margin:12px 0 6px; } .lede { color:var(--muted); font-size:18px; margin:0 0 24px; }
+  section { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:20px 24px; margin:18px 0; }
+  h2 { font-size:15px; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); margin:0 0 12px; }
+  .plain { border-left:4px solid var(--accent); } .plain ol { margin:8px 0 0; padding-left:22px; } .plain li { margin:4px 0; }
+  svg { width:100%; height:auto; display:block; } svg text { font-family:inherit; }
+  .node { cursor:pointer; } .node rect { transition:stroke-width .1s, fill .1s; }
+  .node.active rect { stroke-width:3; fill:#e3f3f0; }
+  .flow { stroke:#5b6570; stroke-width:2; fill:none; }
+  .flow.active { stroke:var(--accent); stroke-width:3.5; }
+  .stepper { display:flex; gap:10px; align-items:center; margin-top:14px; flex-wrap:wrap; }
+  button { font:inherit; border:1px solid var(--line); background:#fff; border-radius:8px; padding:6px 14px; cursor:pointer; } button:hover{border-color:var(--accent);} button:disabled{opacity:.4;cursor:default;}
+  .stepbox { background:#f3fbf9; border:1px solid #cdebe5; border-radius:10px; padding:12px 16px; margin-top:12px; min-height:84px; }
+  .stepbox .n { color:var(--accent); font-weight:700; font-size:13px; } .stepbox .ref { color:var(--muted); font-size:13px; margin-top:4px; }
+  .comp { display:none; } .comp.show { display:block; }
+  .compbox { border:1px solid var(--line); border-radius:10px; padding:14px 18px; margin-top:12px; background:#fff; }
+  .compbox h3 { margin:0 0 4px; font-size:17px; } .compbox .file { font-family:ui-monospace,Menlo,monospace; font-size:13px; color:var(--accent); }
+  .compbox .ref { color:var(--muted); font-size:13px; }
+  .hint { color:var(--muted); font-size:13px; }
+  details { border:1px solid var(--line); border-radius:10px; margin:10px 0; background:#fff; }
+  summary { cursor:pointer; padding:12px 16px; font-weight:600; list-style:none; display:flex; gap:10px; align-items:center; }
+  summary::-webkit-details-marker{display:none;} summary::before{content:"▸";transition:transform .15s;} details[open] summary::before{transform:rotate(90deg);}
+  details > div { padding:0 18px 14px 40px; }
+  pre { background:#1b1f24; color:#e6e9ec; border-radius:10px; padding:14px 16px; font-size:12.5px; overflow:auto; line-height:1.5; }
+  pre .c { color:#8ea0ad; }
+  table { width:100%; border-collapse:collapse; font-size:14px; } td,th { text-align:left; padding:8px 10px; border-bottom:1px solid var(--line); vertical-align:top; }
+  th { color:var(--muted); font-size:13px; text-transform:uppercase; letter-spacing:.04em; font-weight:600; }
+  .tip { background:#1b1f24; opacity:.95; color:#fff; border-radius:10px; padding:10px 12px; width:250px; font-size:13px; position:relative; box-shadow:0 6px 16px rgba(0,0,0,.18); }
+  .tip .k { color:#9fe3d6; font-size:10.5px; font-weight:700; letter-spacing:.05em; } .tip .x { position:absolute; top:6px; right:10px; color:#b8c0c8; font-size:12px; }
+  .swatches { display:flex; gap:24px; flex-wrap:wrap; align-items:flex-start; }
+  .sw { display:flex; gap:8px; align-items:center; font-size:13px; } .sw i { width:22px; height:22px; border-radius:6px; display:inline-block; border:1px solid #ccc; }
+  .pill { display:inline-block; font-size:12px; border-radius:999px; padding:1px 8px; background:#eef1f3; color:var(--muted); }
+  .p-ok{background:#eaf5ee;color:var(--ok)} .p-warn{background:#fdf3e1;color:var(--warn)}
+  footer { color:var(--muted); font-size:13px; margin-top:30px; }
+</style>
+</head>
+<body>
+<main>
+  <span class="badge">Spec · approved</span>
+  <h1>Sticker Translator: Technical Spec</h1>
+  <p class="lede">A native Swift Mac app built only from Apple's on-device frameworks. No downloads, no API keys, and nothing leaves the Mac.</p>
+
+  <section class="plain">
+    <h2>How this works, in plain language</h2>
+    <ol>
+      <li><strong>Control panel:</strong> toggle + status. Hides to the menu bar.</li>
+      <li><strong>Window watcher</strong> (ScreenCaptureKit): snapshots <em>only</em> the WhatsApp window about 3× per second.</li>
+      <li><strong>Text finder</strong> (Vision + NaturalLanguage): reads text and positions, groups lines into "stickers," and keeps only the Spanish ones.</li>
+      <li><strong>Translator</strong> (Foundation Models): Apple's on-device AI writes the literal translation + meaning, once per sticker, saved in a cache.</li>
+      <li><strong>Tooltip overlay:</strong> small dark floating windows that move to wherever the text is in each snapshot and hide when it's gone.</li>
+    </ol>
+    <p style="margin:10px 0 0"><strong>Re-scan, don't track:</strong> the app looks again a few times per second instead of following each sticker. It's simple and survives scrolling. Tooltips trail slightly behind fast scrolls (accepted).</p>
+  </section>
+
+  <section>
+    <h2>Architecture: step through the journey, or click a piece</h2>
+    <svg viewBox="0 0 900 330" role="img" aria-label="Architecture: Control Panel and Readiness start Window Watcher; frames go to Text Finder and Language Filter; Spanish blocks check Translation Cache; new ones go to Translator; results go to Tooltip Overlay drawn over WhatsApp">
+      <defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0L10,5L0,10z" fill="#5b6570"/></marker></defs>
+      <rect x="6" y="6" width="888" height="318" rx="14" fill="none" stroke="#2e7d4f" stroke-dasharray="6 5"/>
+      <text x="20" y="28" font-size="12" fill="#2e7d4f" font-weight="700">🔒 On the Mac: no network</text>
+      <g font-size="13">
+        <g class="node" data-c="panel"><rect x="30" y="50" width="160" height="56" rx="10" fill="#fff" stroke="#5b6570"/><text x="110" y="74" text-anchor="middle" font-weight="700">Control Panel</text><text x="110" y="93" text-anchor="middle" font-size="11" fill="#5b6570">+ menu bar</text></g>
+        <g class="node" data-c="ready"><rect x="30" y="140" width="160" height="56" rx="10" fill="#fff" stroke="#5b6570"/><text x="110" y="164" text-anchor="middle" font-weight="700">Readiness</text><text x="110" y="183" text-anchor="middle" font-size="11" fill="#5b6570">permission · WhatsApp · model</text></g>
+        <g class="node" data-c="watch"><rect x="240" y="50" width="160" height="56" rx="10" fill="#fff" stroke="#5b6570"/><text x="320" y="74" text-anchor="middle" font-weight="700">Window Watcher</text><text x="320" y="93" text-anchor="middle" font-size="11" fill="#5b6570">ScreenCaptureKit, ~3 fps</text></g>
+        <g class="node" data-c="text"><rect x="450" y="50" width="170" height="56" rx="10" fill="#fff" stroke="#5b6570"/><text x="535" y="74" text-anchor="middle" font-weight="700">Text Finder</text><text x="535" y="93" text-anchor="middle" font-size="11" fill="#5b6570">Vision OCR → blocks</text></g>
+        <g class="node" data-c="lang"><rect x="670" y="50" width="190" height="56" rx="10" fill="#fff" stroke="#5b6570"/><text x="765" y="74" text-anchor="middle" font-weight="700">Language Filter</text><text x="765" y="93" text-anchor="middle" font-size="11" fill="#5b6570">Spanish only</text></g>
+        <g class="node" data-c="cache"><rect x="670" y="150" width="190" height="56" rx="10" fill="#fff" stroke="#5b6570"/><text x="765" y="174" text-anchor="middle" font-weight="700">Translation Cache</text><text x="765" y="193" text-anchor="middle" font-size="11" fill="#5b6570">text → translating/done/failed/closed</text></g>
+        <g class="node" data-c="trans"><rect x="450" y="150" width="170" height="56" rx="10" fill="#fff" stroke="#5b6570"/><text x="535" y="174" text-anchor="middle" font-weight="700">Translator</text><text x="535" y="193" text-anchor="middle" font-size="11" fill="#5b6570">Foundation Models</text></g>
+        <g class="node" data-c="overlay"><rect x="450" y="250" width="410" height="56" rx="10" fill="#fff" stroke="#5b6570"/><text x="655" y="274" text-anchor="middle" font-weight="700">Tooltip Overlay</text><text x="655" y="293" text-anchor="middle" font-size="11" fill="#5b6570">floating panels beside each sticker · move / hide each frame · ✕ / Retry</text></g>
+        <g><rect x="30" y="250" width="360" height="56" rx="10" fill="#efeae2" stroke="#128c7e"/><text x="210" y="274" text-anchor="middle" font-weight="700" fill="#0e6f64">WhatsApp Desktop</text><text x="210" y="293" text-anchor="middle" font-size="11" fill="#5b6570">tooltips float on top; never captured</text></g>
+      </g>
+      <path id="f1" class="flow" d="M110,106 L110,138" marker-end="url(#ar)"/>
+      <path id="f2" class="flow" d="M190,78 L238,78" marker-end="url(#ar)"/>
+      <path id="f3" class="flow" d="M400,78 L448,78" marker-end="url(#ar)"/>
+      <path id="f4" class="flow" d="M620,78 L668,78" marker-end="url(#ar)"/>
+      <path id="f5" class="flow" d="M765,106 L765,148" marker-end="url(#ar)"/>
+      <path id="f6" class="flow" d="M670,178 L622,178" marker-end="url(#ar)"/>
+      <path id="f6b" class="flow" d="M620,192 L668,192" marker-end="url(#ar)"/>
+      <path id="f7" class="flow" d="M765,206 L765,248" marker-end="url(#ar)"/>
+      <path id="f8" class="flow" d="M450,278 L392,278" marker-end="url(#ar)"/>
+      <path id="f0" class="flow" d="M320,106 C320,200 300,230 300,248" marker-end="url(#ar)" stroke-dasharray="4 4"/>
+      <text x="330" y="200" font-size="11" fill="#5b6570">captures</text>
+    </svg>
+    <div class="stepper">
+      <button id="prev">← Back</button><button id="next">Next →</button>
+      <span class="hint" id="num"></span><span class="hint" style="margin-left:auto">Click any box to see its file and PRD heading</span>
+    </div>
+    <div class="stepbox"><div class="n" id="sn"></div><div id="sb"></div><div class="ref" id="sr"></div></div>
+    <div id="comps"></div>
+    <noscript><p>Journey: run → readiness check → toggle on → watcher snapshots WhatsApp → text finder + Spanish filter → cache check → translator if new → overlay places tooltips → ✕/Retry → toggle off removes all.</p></noscript>
+  </section>
+
+  <section>
+    <h2>Look and feel</h2>
+    <div class="swatches">
+      <div class="tip"><span class="x">✕</span><div class="k">LITERAL</div>"Don't stain!"<div class="k" style="margin-top:6px">MEANING</div>"No way!" (playful disbelief, Mexican slang)</div>
+      <div>
+        <div class="sw"><i style="background:#1B1F24"></i>Tooltip #1B1F24 at ~92%</div>
+        <div class="sw" style="margin-top:6px"><i style="background:#9FE3D6"></i>Labels #9FE3D6, 10–11pt bold caps</div>
+        <div class="sw" style="margin-top:6px"><i style="background:#FFFFFF"></i>Body white, 13pt SF Pro</div>
+        <div class="sw" style="margin-top:6px"><i style="background:#FFB4B4"></i>Error text + "↻ Retry"</div>
+        <p class="hint" style="margin:10px 0 0">Max width ~260pt, 10pt corners. Placed right of the sticker (left if no room). Never covers it.<br>Control panel: plain native SwiftUI form, with an orange or green status dot.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Where data lives</h2>
+    <table>
+      <tr><th>Data</th><th>Lives in</th><th>After relaunch</th></tr>
+      <tr><td>Toggle</td><td>AppState</td><td><span class="pill">starts off</span></td></tr>
+      <tr><td>Frame + WhatsApp window position</td><td>Window Watcher</td><td><span class="pill">gone</span></td></tr>
+      <tr><td>Text blocks in this frame</td><td>Text Finder</td><td><span class="pill">gone</span></td></tr>
+      <tr><td>text → translating / done / failed / closed</td><td>Translation Cache</td><td><span class="pill">gone</span> (closed tooltips can return; deferred)</td></tr>
+      <tr><td>Tooltip panels</td><td>Tooltip Overlay</td><td><span class="pill">gone</span></td></tr>
+    </table>
+    <p class="hint" style="margin:10px 0 0">All in memory. Nothing written to disk, nothing sent anywhere.</p>
+  </section>
+
+  <section>
+    <h2>File structure</h2>
+<pre>hackathon/
+├── Package.swift                         <span class="c"># SwiftPM, macOS 26</span>
+├── Sources/StickerTranslator/
+│   ├── StickerTranslatorApp.swift        <span class="c"># App shell, MenuBarExtra</span>
+│   ├── AppState.swift                    <span class="c"># toggle, status, starts/stops pipeline</span>
+│   ├── ControlPanelView.swift            <span class="c"># Control Panel</span>
+│   ├── Readiness.swift                   <span class="c"># permission · WhatsApp · model checks</span>
+│   ├── Pipeline/
+│   │   ├── WindowWatcher.swift           <span class="c"># ScreenCaptureKit</span>
+│   │   ├── TextFinder.swift              <span class="c"># Vision OCR + blocks</span>
+│   │   ├── LanguageFilter.swift          <span class="c"># Spanish check</span>
+│   │   ├── Translator.swift              <span class="c"># Foundation Models</span>
+│   │   └── TranslationCache.swift
+│   ├── Overlay/
+│   │   ├── OverlayController.swift       <span class="c"># coords → screen, place/hide</span>
+│   │   └── TooltipView.swift             <span class="c"># loading / done / error, ✕ / Retry</span>
+│   └── DevCheck.swift                    <span class="c"># --check &lt;image&gt; (dev only)</span>
+├── Resources/Info.plist                  <span class="c"># LSUIElement, bundle ID</span>
+├── scripts/build-app.sh · run.sh         <span class="c"># build .app, ad hoc sign, open</span>
+├── samples/                              <span class="c"># public-safe test stickers</span>
+├── README.md
+└── devpost/</pre>
+  </section>
+
+  <section>
+    <h2>Run, risks, and decisions</h2>
+    <details open><summary>Where it runs and how someone tries it</summary><div>
+      <p><code>./scripts/run.sh</code> → grant Screen &amp; System Audio Recording in System Settings → relaunch. It runs locally on your M4 Air with Apple Intelligence on.</p>
+      <p>Demo: staged Spanish-sticker chat (text messages in English). Toggle on → sticker arrives → Translating… → literal + meaning → scroll → ✕ → optionally Wi-Fi off. Submission is the video + public repo. <strong>No deployment and no downloadable app.</strong></p></div></details>
+    <details><summary>Important failure modes</summary><div><ul>
+      <li><strong>Permission lost after rebuild</strong> (ad hoc signature) → re-grant; or sign with a free Xcode certificate</li>
+      <li><strong>Model refuses, errors, or is slow</strong> → error + Retry; "Translating…" while waiting</li>
+      <li><strong>Stylized fonts misread, or short text misjudged</strong> → tune using DevCheck + samples</li>
+      <li><strong>Spanish text message on screen</strong> → gets a tooltip too (known limitation)</li></ul></div></details>
+    <details><summary>What was simplified</summary><div><ul>
+      <li>Any Spanish text = sticker (stretch: check WhatsApp's layout via accessibility info)</li>
+      <li>Re-scan at ~3 fps instead of motion tracking</li>
+      <li>One state per unique text; identical stickers share it</li>
+      <li>In-memory only; local run + video</li></ul></div></details>
+    <details><summary>Decisions and early checks</summary><div><ul>
+      <li><strong>You chose:</strong> native Swift + Apple on-device frameworks; Spanish only in stickers for the demo; the re-scan tradeoff; local + video</li>
+      <li><strong>Verified on your Mac:</strong> Foundation Models available; Vision es-ES supported (no Hindi); WhatsApp bundle ID <code>net.whatsapp.WhatsApp</code></li>
+      <li><strong>Build step 1:</strong> test explanation quality on 3–5 sample slang stickers before building the overlay</li>
+      <li><strong>Verify early:</strong> ScreenCaptureKit captures WhatsApp normally; Vision handles sticker fonts</li></ul></div></details>
+  </section>
+
+  <footer>Companion to <code>devpost/spec.md</code> (the Markdown copy is the main one).</footer>
+</main>
+<script>
+const comps = {
+  panel:{n:"Control Panel + App Shell",f:"ControlPanelView.swift · StickerTranslatorApp.swift · AppState.swift",d:"Toggle, \"Spanish → English,\" status line. Menu-bar app with no Dock icon. Hiding the panel doesn't stop translation.",r:"prd.md > Control Panel and Toggle · Screens and Layout"},
+  ready:{n:"Permissions & Readiness",f:"Readiness.swift",d:"Screen permission (CGPreflightScreenCaptureAccess), WhatsApp running (net.whatsapp.WhatsApp), model available. The toggle is disabled until all three pass.",r:"prd.md > States and Boundaries"},
+  watch:{n:"Window Watcher",f:"Pipeline/WindowWatcher.swift",d:"Captures only WhatsApp's window, about 3 fps, along with its screen frame. Our tooltips are never in the image.",r:"prd.md > Automatic Detection · Scroll Tracking"},
+  text:{n:"Text Finder",f:"Pipeline/TextFinder.swift",d:"Vision text recognition (es-ES + en-US). Groups nearby lines into blocks of {text, box}.",r:"prd.md > Automatic Detection"},
+  lang:{n:"Language Filter",f:"Pipeline/LanguageFilter.swift",d:"NLLanguageRecognizer: Spanish dominant, ≥0.6 confidence (tunable), ≥2 letters. English or no text → no tooltip.",r:"prd.md > Automatic Detection"},
+  cache:{n:"Translation Cache",f:"Pipeline/TranslationCache.swift",d:"Normalized text → translating | done | failed | closed. Makes tooltips reappear immediately and keeps closed ones closed.",r:"prd.md > Translation Tooltip · Scroll Tracking"},
+  trans:{n:"Translator",f:"Pipeline/Translator.swift",d:"LanguageModelSession with guided generation into StickerTranslation {literal, meaning}. One request at a time; errors become a failed result.",r:"prd.md > Translation Tooltip · Privacy"},
+  overlay:{n:"Tooltip Overlay",f:"Overlay/OverlayController.swift · Overlay/TooltipView.swift",d:"One floating, non-activating NSPanel per visible block. Converts Vision coords → window → screen (Y flip). Moves or hides it each frame. Only ✕ and Retry take clicks.",r:"prd.md > Translation Tooltip · Scroll Tracking · Look and Feel"}
+};
+const steps = [
+  {t:"You run the app; the Control Panel asks Readiness what's missing.",h:["panel","ready"],f:["f1"],r:"prd.md > The Core Journey, steps 1–2"},
+  {t:"Toggle on → the Window Watcher starts snapshotting WhatsApp about 3× per second.",h:["panel","watch"],f:["f2","f0"],r:"step 3"},
+  {t:"The panel hides to the menu bar; everything keeps running.",h:["panel"],f:[],r:"step 4"},
+  {t:"Each snapshot → Text Finder reads text and positions and groups lines into blocks.",h:["watch","text"],f:["f3"],r:"step 6"},
+  {t:"Language Filter keeps only Spanish blocks. English or no text → nothing.",h:["text","lang"],f:["f4"],r:"prd.md > Automatic Detection"},
+  {t:"Check the cache. New → \"Translating…\" and ask the Translator. Known → reuse. Closed → skip.",h:["lang","cache","trans"],f:["f5","f6","f6b"],r:"step 6–7"},
+  {t:"Tooltip Overlay places each tooltip beside its sticker, over WhatsApp.",h:["cache","overlay"],f:["f7","f8"],r:"step 7"},
+  {t:"Next snapshot: tooltips move to the new positions and hide if their text is gone.",h:["watch","overlay"],f:["f0","f8"],r:"step 8 · prd.md > Scroll Tracking"},
+  {t:"✕ → cache marks it closed. Retry → clears the error and translates again.",h:["overlay","cache"],f:["f7"],r:"step 9"},
+  {t:"Toggle off → snapshots stop and all tooltips are removed.",h:["panel","watch","overlay"],f:[],r:"prd.md > Control Panel and Toggle"}
+];
+const holder=document.getElementById("comps");
+for(const k in comps){const c=comps[k];const d=document.createElement("div");d.className="comp";d.id="c-"+k;
+  d.innerHTML=`<div class="compbox"><h3>${c.n}</h3><div class="file">${c.f}</div><p style="margin:6px 0">${c.d}</p><div class="ref">Implements ${c.r}</div></div>`;holder.appendChild(d);}
+let i=0;
+function clear(){document.querySelectorAll(".node").forEach(n=>n.classList.remove("active"));document.querySelectorAll(".flow").forEach(f=>f.classList.remove("active"));document.querySelectorAll(".comp").forEach(c=>c.classList.remove("show"));}
+function render(){clear();const s=steps[i];
+  s.h.forEach(k=>document.querySelector(`.node[data-c="${k}"]`).classList.add("active"));
+  s.f.forEach(id=>document.getElementById(id).classList.add("active"));
+  document.getElementById("sn").textContent="Step "+(i+1);document.getElementById("sb").textContent=s.t;document.getElementById("sr").textContent="PRD: "+s.r;
+  document.getElementById("num").textContent=(i+1)+" / "+steps.length;
+  document.getElementById("prev").disabled=i===0;document.getElementById("next").disabled=i===steps.length-1;}
+document.getElementById("prev").onclick=()=>{if(i>0){i--;render();}};
+document.getElementById("next").onclick=()=>{if(i<steps.length-1){i++;render();}};
+document.querySelectorAll(".node").forEach(n=>n.addEventListener("click",()=>{const k=n.dataset.c;document.querySelectorAll(".comp").forEach(c=>c.classList.remove("show"));document.getElementById("c-"+k).classList.add("show");document.querySelectorAll(".node").forEach(x=>x.classList.remove("active"));n.classList.add("active");}));
+render();
+</script>
+</body>
+</html>

@@ -9,7 +9,7 @@ Build mode: learn
 
 ## Slices
 
-- [ ] **1. A sample sticker image goes in, and a literal translation plus its meaning come out**
+- [x] **1. A sample sticker image goes in, and a literal translation plus its meaning come out**
   Becomes usable: `StickerTranslator --check samples/<image>.png` reads the Spanish text in a sticker image, confirms it's Spanish, and prints LITERAL and MEANING from Apple's on-device model. English or text-free images print "no Spanish text, skipped".
   Why now: This is the kernel and the biggest risk: is the on-device model good enough at explaining the joke? It also checks that Vision can read sticker fonts and that Foundation Models builds with this Mac's Command Line Tools (there's no full Xcode). If the meaning is weak, we tune the prompt before any overlay work. Scaffolding the SwiftPM package is part of this step.
   PRD ref: `prd.md > Translation Tooltip`, `prd.md > Automatic Detection`, `prd.md > Privacy`

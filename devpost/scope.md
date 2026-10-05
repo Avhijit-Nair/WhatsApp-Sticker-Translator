@@ -46,6 +46,7 @@ WhatsApp Desktop is open on the Mac and the toggle is on. A funny exchange plays
 - Other messaging apps and other language pairs
 - Better slang and cultural explanations, possibly a model customized for this (ties to the learner's model-compression interest)
 - Translating text messages too (lower priority, since Pixel already does this)
+- Growing the slang glossary from real chats: collect unknown phrases with the model's guess for review, never trusted automatically (raised during build step 1)
 
 ## Explicitly Cut
 - **iPhone version:** iOS doesn't let apps draw on top of WhatsApp.

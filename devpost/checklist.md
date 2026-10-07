@@ -29,7 +29,7 @@ Build mode: learn
   Learner check: Run `./scripts/run.sh`. With WhatsApp closed, the panel should say so; grant screen permission if asked, open WhatsApp, and the status should turn green and the toggle unlock. Close the panel and reopen it from the menu bar.
   Commit: `Add menu-bar app shell, control panel, and readiness checks`
 
-- [ ] **3. Turn on the toggle, and Spanish stickers in WhatsApp get a tooltip beside them**
+- [x] **3. Turn on the toggle, and Spanish stickers in WhatsApp get a tooltip beside them**
   Becomes usable: The core journey works live. With the toggle on, the app snapshots the WhatsApp window about 3 times per second. Each Spanish block gets a dark tooltip next to it showing "Translating… please wait a moment," then LITERAL and MEANING. English and text-free stickers get nothing. Turning the toggle off removes everything.
   Why now: This is the "oh, that's cool" moment from the scope, and it's built on the two risky pieces already proven. Coordinate mapping (Vision's box → window → screen) is where things are most likely to go subtly wrong, so we want your eyes on it right away.
   PRD ref: `prd.md > The Core Journey` (steps 5–7, 10), `prd.md > Automatic Detection`, `prd.md > Translation Tooltip`, `prd.md > Control Panel and Toggle`
@@ -74,3 +74,5 @@ Activity mode:
 
 - Translator uses plain two-line output instead of `@Generable`, with permissive guardrails — the `@Generable` macro plugin only ships with full Xcode (this Mac has Command Line Tools only), and the default guardrails rejected most slang, even "ya me voy a dormir".
 - Added a built-in Slang Glossary that feeds notes into the prompt (learner's choice) — the on-device model alone explained Mexican slang confidently wrongly ("qué oso" → "How cool!", "aguas" → "I'm thirsty").
+- `build-app.sh` signs with a self-signed local "Sticker Translator Dev" identity (created once by the learner via `scripts/make-dev-cert.sh`), falling back to ad hoc — ad hoc rebuilds lost the screen permission every time, as the spec's failure mode predicted.
+- A glossary match now counts as Spanish unless the text is clearly English (was: Spanish confidence ≥ 0.15), glossary entries can be flagged `playful`, and WhatsApp's time/✓✓ labels are dropped before grouping — at the early checkpoint, deliberately misspelled stickers ("ola wen dia", 3% Spanish) were filtered out, and timestamps merged into sticker text made tooltips retranslate and jump.

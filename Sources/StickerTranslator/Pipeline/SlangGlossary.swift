@@ -7,6 +7,8 @@ struct SlangGlossary: Sendable {
         let phrase: String
         let variants: [String]
         let note: String
+        /// A deliberate, funny misspelling ("ola wen dia") rather than a slang term.
+        var playful: Bool? = nil
     }
 
     let entries: [Entry]

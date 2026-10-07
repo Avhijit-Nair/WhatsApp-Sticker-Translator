@@ -10,6 +10,7 @@ let samples = [
     Sample(file: "ando-crudo.png", lines: ["ANDO BIEN", "CRUDO"], font: "Chalkboard SE Bold", color: .systemTeal),
     Sample(file: "te-quiero.png", lines: ["te quiero", "un chingo"], font: "Noteworthy Bold", color: .systemRed),
     Sample(file: "me-vale.png", lines: ["ME VALE"], font: "Futura Condensed ExtraBold", color: .systemPurple),
+    Sample(file: "ola-wen-dia.png", lines: ["OLA WEN", "DIA"], font: "Chalkboard SE Bold", color: .systemBlue),
     Sample(file: "english.png", lines: ["GOOD MORNING", "SUNSHINE"], font: "Impact", color: .systemYellow),
     Sample(file: "no-text.png", lines: [], font: "Impact", color: .systemGreen),
 ]

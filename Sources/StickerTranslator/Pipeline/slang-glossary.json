@@ -557,5 +557,115 @@
       "me muero"
     ],
     "note": "\"I'm dead tired\" or \"I'm dying (of laughter)\" — exaggeration."
+  },
+  {
+    "phrase": "ola",
+    "variants": [
+      "olaa",
+      "olis",
+      "holi",
+      "holis"
+    ],
+    "note": "Playful spelling of \"hola\" = \"hi\" (\"holi/holis\" = cutesy \"hiii\").",
+    "playful": true
+  },
+  {
+    "phrase": "wen dia",
+    "variants": [
+      "wen día",
+      "wenos dias",
+      "wenos días",
+      "buen dia",
+      "buen día"
+    ],
+    "note": "Playful spelling of \"buen día / buenos días\" = \"good morning\" — the \"w\" for \"bu\" mimics lazy, cute pronunciation.",
+    "playful": true
+  },
+  {
+    "phrase": "wenas",
+    "variants": [
+      "wenas noches",
+      "wenas tardes",
+      "wena",
+      "buenas"
+    ],
+    "note": "Playful spelling of \"buenas\" = casual \"hey / good evening\".",
+    "playful": true
+  },
+  {
+    "phrase": "tqm",
+    "variants": [
+      "tkm",
+      "tq"
+    ],
+    "note": "Texting shorthand for \"te quiero mucho\" = \"love you lots\"."
+  },
+  {
+    "phrase": "ntp",
+    "variants": [],
+    "note": "Texting shorthand for \"no te preocupes\" = \"don't worry\"."
+  },
+  {
+    "phrase": "xq",
+    "variants": [
+      "pq",
+      "xk",
+      "porq"
+    ],
+    "note": "Texting shorthand for \"por qué / porque\" = \"why / because\"."
+  },
+  {
+    "phrase": "bb",
+    "variants": [
+      "bebe",
+      "bebé",
+      "bebito",
+      "bebita"
+    ],
+    "note": "\"babe\" / \"baby\" — affectionate."
+  },
+  {
+    "phrase": "grax",
+    "variants": [
+      "grasias",
+      "grasiaz",
+      "graciaz"
+    ],
+    "note": "Playful spelling of \"gracias\" = \"thanks\".",
+    "playful": true
+  },
+  {
+    "phrase": "amix",
+    "variants": [
+      "amiko",
+      "amika",
+      "amigui"
+    ],
+    "note": "Playful spelling of \"amigo/amiga\" = \"bestie / buddy\".",
+    "playful": true
+  },
+  {
+    "phrase": "ermosa",
+    "variants": [
+      "ermoso",
+      "hermosa",
+      "hermoso"
+    ],
+    "note": "(Playful spelling of) \"hermosa/hermoso\" = \"beautiful / gorgeous\".",
+    "playful": true
+  },
+  {
+    "phrase": "ke",
+    "variants": [],
+    "note": "Texting shorthand for \"que / qué\" = \"what / that\"."
+  },
+  {
+    "phrase": "pior",
+    "variants": [
+      "de lo pior",
+      "lo pior"
+    ],
+    "note": "Jokey misspelling of \"peor\" = \"worst\" (\"eres de lo pior\" = \"you're the worst\", teasing).",
+    "playful": true
   }
 ]

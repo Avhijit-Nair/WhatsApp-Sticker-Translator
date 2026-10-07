@@ -26,6 +26,10 @@ final class TranslationCache {
         if let known = spanishDecisions[key] { return known }
         let decision = LanguageFilter.isSpanish(text, knownSlang: !SlangGlossary.shared.matches(in: text).isEmpty)
         spanishDecisions[key] = decision
+        if !decision {
+            let confidence = String(format: "%.2f", LanguageFilter.spanishConfidence(text))
+            LivePipeline.log.info("skipped (not Spanish, \(confidence, privacy: .public)): \(key, privacy: .public)")
+        }
         return decision
     }
 }

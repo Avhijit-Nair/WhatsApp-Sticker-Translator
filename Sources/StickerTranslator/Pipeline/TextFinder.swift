@@ -22,7 +22,16 @@ enum TextFinder {
                   candidate.confidence > 0.3 else { return nil }
             return TextBlock(text: candidate.string, box: observation.boundingBox)
         }
-        return group(lines)
+        return group(lines.filter { !isChatChrome($0.text) })
+    }
+
+    /// WhatsApp draws the message time and ✓✓ ticks on the sticker's corner ("7:58 pm ✓✓",
+    /// often read as "7:58pm j"). Left in, they change the sticker's text from frame to frame.
+    static func isChatChrome(_ text: String) -> Bool {
+        let trimmed = text.trimmingCharacters(in: .whitespaces)
+        if trimmed.filter(\.isLetter).count <= 1 { return true }
+        return trimmed.range(of: #"^\d{1,2}[:.]\d{2}\s*([ap]\.?\s?m\.?)?\W*\w?\W*$"#,
+                             options: [.regularExpression, .caseInsensitive]) != nil
     }
 
     /// Joins lines whose boxes are vertically close and horizontally overlapping.

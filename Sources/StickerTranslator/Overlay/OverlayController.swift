@@ -6,6 +6,8 @@ import SwiftUI
 final class OverlayController {
     private var panels: [String: NSPanel] = [:]
     private let gap: CGFloat = 12
+    var onClose: (String) -> Void = { _ in }
+    var onRetry: (String) -> Void = { _ in }
 
     /// Shows a tooltip for each `(key, state, rect)` and hides the rest.
     /// `rect` is the sticker text's position in AppKit screen coordinates.
@@ -17,12 +19,22 @@ final class OverlayController {
         for item in items {
             let panel = panels[item.key] ?? makePanel()
             panels[item.key] = panel
-            let hosting = panel.contentView as! NSHostingView<TooltipView>
-            hosting.rootView = TooltipView(state: item.state)
+            let hosting = panel.contentView as! TooltipHostingView
+            let key = item.key
+            hosting.rootView = TooltipView(
+                state: item.state,
+                onClose: { [weak self] in self?.close(key) },
+                onRetry: { [weak self] in self?.onRetry(key) }
+            )
             let size = hosting.fittingSize
             panel.setFrame(placement(for: item.rect, size: size), display: true)
             if !panel.isVisible { panel.orderFrontRegardless() }
         }
+    }
+
+    private func close(_ key: String) {
+        panels.removeValue(forKey: key)?.close()
+        onClose(key)
     }
 
     func removeAll() {
@@ -48,10 +60,10 @@ final class OverlayController {
         panel.backgroundColor = .clear
         panel.isOpaque = false
         panel.hasShadow = false
-        panel.ignoresMouseEvents = true
+        panel.becomesKeyOnlyIfNeeded = true // clicking ✕ or Retry never takes focus from WhatsApp
         panel.isReleasedWhenClosed = false
         panel.collectionBehavior = [.canJoinAllSpaces, .fullScreenAuxiliary, .ignoresCycle]
-        panel.contentView = NSHostingView(rootView: TooltipView(state: .translating))
+        panel.contentView = TooltipHostingView(rootView: TooltipView(state: .translating))
         return panel
     }
 
@@ -67,4 +79,9 @@ final class OverlayController {
             height: box.height * windowFrame.height
         )
     }
+}
+
+/// Lets ✕ and Retry respond to the first click, even though the tooltip panel never becomes active.
+final class TooltipHostingView: NSHostingView<TooltipView> {
+    override func acceptsFirstMouse(for event: NSEvent?) -> Bool { true }
 }

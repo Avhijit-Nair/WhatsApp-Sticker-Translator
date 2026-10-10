@@ -7,9 +7,11 @@ struct StickerTranslation: Sendable, Equatable {
 
 enum TranslatorError: Error, CustomStringConvertible {
     case unreadableReply(String)
+    case simulated
     var description: String {
         switch self {
         case .unreadableReply(let reply): "The model's reply couldn't be read: \(reply)"
+        case .simulated: "Simulated failure (--simulate-failure)"
         }
     }
 }
@@ -19,6 +21,9 @@ enum TranslatorError: Error, CustomStringConvertible {
 actor Translator {
     private let model = SystemLanguageModel(guardrails: .permissiveContentTransformations)
     private let glossary: SlangGlossary
+    /// Dev flag `--simulate-failure`: the first attempt for each text fails, so Retry can be tried.
+    private let simulateFailure = CommandLine.arguments.contains("--simulate-failure")
+    private var failedOnce: Set<String> = []
 
     init(glossary: SlangGlossary = .shared) {
         self.glossary = glossary
@@ -40,6 +45,7 @@ actor Translator {
     """
 
     func translate(_ text: String) async throws -> StickerTranslation {
+        if simulateFailure, failedOnce.insert(text).inserted { throw TranslatorError.simulated }
         let matches = glossary.matches(in: text)
         let notes = matches.map { "\"\($0.phrase)\" = \($0.note)" }
         var prompt = "Sticker text: \"\(text)\""

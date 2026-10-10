@@ -51,7 +51,7 @@ Build mode: learn
 
 ## Hands-on Checkpoints
 
-- [ ] Early usable behavior explored — after slice 1 (is the meaning good enough?) and after slice 3 (first live tooltip in WhatsApp)
+- [x] Early usable behavior explored — after slice 1 (is the meaning good enough?) and after slice 3 (first live tooltip in WhatsApp)
 - [ ] Final kick-the-tires exploration and feedback completed
 
 ## Final Review

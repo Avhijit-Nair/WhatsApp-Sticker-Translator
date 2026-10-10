@@ -9,7 +9,22 @@ final class LivePipeline {
     private let overlay = OverlayController()
     private let translator = Translator()
     private var loop: Task<Void, Never>?
+    /// Text seen in the previous snapshot. New text must show up twice in a row before it's
+    /// translated, so half-scrolled, partly read stickers don't each start a translation.
+    private var previousKeys: Set<String> = []
     static let log = Logger(subsystem: "dev.stickertranslator.app", category: "pipeline")
+
+    init() {
+        overlay.onClose = { [weak self] key in
+            self?.cache[key] = .closed
+            Self.log.info("closed: \(key, privacy: .public)")
+        }
+        overlay.onRetry = { [weak self] key in
+            guard let self, case .failed = cache[key] else { return }
+            Self.log.info("retry: \(key, privacy: .public)")
+            translate(key: key)
+        }
+    }
 
     func start() {
         guard loop == nil else { return }
@@ -41,27 +56,41 @@ final class LivePipeline {
         guard loop != nil else { return } // stopped while reading
 
         var items: [(key: String, state: TranslationCache.State, rect: CGRect)] = []
+        var seenKeys: Set<String> = []
         for block in blocks {
             let key = TranslationCache.key(for: block.text)
             guard !key.isEmpty, cache.isSpanish(block.text, key: key) else { continue }
-            if cache[key] == nil { translate(block.text, key: key) }
+            seenKeys.insert(key)
+            texts[key] = block.text
+            if cache[key] == nil {
+                guard previousKeys.contains(key) else { continue }
+                translate(key: key)
+            }
             guard let state = cache[key], state != .closed else { continue }
             items.append((key, state, OverlayController.screenRect(for: block.box, in: snapshot.windowFrame)))
         }
+        previousKeys = seenKeys
         overlay.show(items)
         if !items.isEmpty {
             Self.log.debug("frame: \(blocks.count) blocks, tooltips: \(items.map { "\($0.key) @ \(Int($0.rect.minX)),\(Int($0.rect.minY))" }.joined(separator: "; "), privacy: .public)")
         }
     }
 
-    private func translate(_ text: String, key: String) {
+    /// Original (un-normalized) text for each key, for the model and for Retry.
+    private var texts: [String: String] = [:]
+
+    private func translate(key: String) {
+        guard let text = texts[key] else { return }
         cache[key] = .translating
         Self.log.info("translating: \(key, privacy: .public)")
         Task {
             do {
-                cache[key] = .done(try await translator.translate(text))
+                let translation = try await translator.translate(text)
+                guard cache[key] != .closed else { return }
+                cache[key] = .done(translation)
                 Self.log.info("translated: \(key, privacy: .public)")
             } catch {
+                guard cache[key] != .closed else { return }
                 cache[key] = .failed(String(describing: error))
                 Self.log.error("failed: \(key, privacy: .public) — \(String(describing: error), privacy: .public)")
             }

@@ -108,6 +108,7 @@ Source: `scope.md > The POC Boundary`.
 - Other messaging apps.
 - Better slang explanations from a model customized for this (ties to the learner's model-compression interest).
 - Translating text messages too.
+- Catching the stickers it sometimes misses (small or heavily stylized lettering), raised at final review and deferred to V2.
 - Growing the slang glossary from stickers it hasn't seen: suggestions reviewed before they become trusted (deferred in build step 1; auto-adding would lock in the model's wrong guesses).
 
 ## Non-Goals

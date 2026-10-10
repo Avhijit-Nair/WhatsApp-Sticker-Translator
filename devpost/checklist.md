@@ -39,7 +39,7 @@ Build mode: learn
   Learner check: Open a chat containing a Spanish sticker (send yourself one of the samples if needed), turn on the toggle, and watch: "Translating…" should appear next to the sticker, then the translation. Does the placement and look match what you pictured?
   Commit: `Show live translation tooltips beside Spanish stickers in WhatsApp`
 
-- [ ] **4. Tooltips follow scrolling, close with ✕, and recover from errors**
+- [x] **4. Tooltips follow scrolling, close with ✕, and recover from errors**
   Becomes usable: Scroll the chat and tooltips move with their stickers, hide when the sticker leaves the view, and come back instantly when it returns. ✕ closes a tooltip for the rest of the session. A failed translation shows "Couldn't translate this sticker" with ↻ Retry. When literal and meaning are the same, only one line shows. Works with Wi-Fi off.
   Why now: These behaviors polish the core loop and depend on slice 3's re-scan loop and cache. They're the rest of `What We're Building`.
   PRD ref: `prd.md > Scroll Tracking`, `prd.md > Translation Tooltip`, `prd.md > States and Boundaries`, `prd.md > Privacy`, `prd.md > Open Questions`
@@ -52,23 +52,25 @@ Build mode: learn
 ## Hands-on Checkpoints
 
 - [x] Early usable behavior explored — after slice 1 (is the meaning good enough?) and after slice 3 (first live tooltip in WhatsApp)
-- [ ] Final kick-the-tires exploration and feedback completed
+- [x] Final kick-the-tires exploration and feedback completed — combined with slice 4's hands-on check: the learner ran the whole journey live in WhatsApp (toggle, tooltips, scrolling, ✕, Retry, Wi-Fi off)
 
 ## Final Review
 
-- [ ] Final review complete — feedback resolved and learner confirms ready to ship
+- Findings: everything worked as expected; some stickers are occasionally not detected (for example, small or stylized lettering where the text reader drops letters, as with a local test image). The learner chose to leave this for V2, so no revisions were made.
+- Final verification: `swift run StickerTranslator --check samples/*.png` passes (Spanish stickers translated; English and no-text skipped); the app bundle signature is valid; translation works with network access denied.
+- [x] Final review complete — feedback resolved and learner confirms ready to ship ("For now its good to go")
 
 ## Code Tour and App Map
 
-- [ ] Learning activity complete — guided route, focused alternative, prior practice connected, or brief recap
-- [ ] Optional edit and transfer reflection addressed — offered/declined/already covered/not applicable as appropriate
-- [ ] `devpost/app-map.html` generated from finished code, checked, and shown, including a project-grounded practice to reuse
+- [x] Learning activity complete — guided route, focused alternative, prior practice connected, or brief recap
+- [x] Optional edit and transfer reflection addressed — offered/declined/already covered/not applicable as appropriate
+- [x] `devpost/app-map.html` generated from finished code, checked, and shown, including a project-grounded practice to reuse
 
-Activity and evidence: 
-Route and stops: 
-Edit outcome: 
-Reflection: 
-Activity mode: 
+Activity and evidence: Focused alternative, already practiced during the build and connected in the recap: the risk-first `--check` harness (slice 1) exposed wrong slang meanings ("qué oso" → "How cool!"), which led to the learner's glossary decision; later it isolated the "ola wen dia" miss to the language filter (3% Spanish), not the model.
+Route and stops: Reference route only (not toured live): `LivePipeline.tick`, `Translator.translate` + `slang-glossary.json`, `OverlayController.screenRect` / `show`.
+Edit outcome: Not applicable. The learner's hands-on changes during the build were feedback-driven (playful-spelling detection), so no extra edit exercise.
+Reflection: Offered once at handoff; optional.
+Activity mode: Prior practice plus an evidence-based recap; map generated from commit 45583a7.
 
 ## Revisions
 

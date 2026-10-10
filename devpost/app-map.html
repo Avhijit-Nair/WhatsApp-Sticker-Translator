@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sticker Translator — App Map</title>
+<style>
+  :root { --ink:#1B1F24; --teal:#2a9d8f; --soft:#f4f6f8; --line:#d0d7de; }
+  body { font: 15px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; color: var(--ink); max-width: 860px; margin: 2rem auto; padding: 0 1.25rem; }
+  h1 { margin-bottom: .2rem; } h2 { margin-top: 2rem; border-bottom: 1px solid var(--line); padding-bottom: .3rem; }
+  .sub { color:#57606a; margin-top:0; }
+  code { background: var(--soft); padding: .1rem .35rem; border-radius: 4px; font-size: .9em; }
+  pre { background: var(--soft); padding: .8rem 1rem; border-radius: 8px; overflow-x: auto; }
+  ol.route > li { margin-bottom: 1rem; }
+  table { border-collapse: collapse; width: 100%; } td, th { text-align: left; padding: .45rem .6rem; border-bottom: 1px solid var(--line); vertical-align: top; }
+  .note { background: #eef9f6; border-left: 4px solid var(--teal); padding: .8rem 1rem; border-radius: 0 8px 8px 0; }
+  details { margin: .5rem 0; } summary { cursor: pointer; font-weight: 600; }
+  svg text { font: 12px -apple-system, BlinkMacSystemFont, sans-serif; }
+  a:focus, summary:focus { outline: 2px solid var(--teal); outline-offset: 2px; }
+</style>
+</head>
+<body>
+<h1>Sticker Translator — App Map</h1>
+<p class="sub">A take-home guide to where things live. A snapshot of commit <code>45583a7</code>; the code may drift after it.</p>
+
+<h2>What it is</h2>
+<p>A Mac menu-bar app that watches WhatsApp Desktop and puts a dark tooltip beside each Spanish sticker, with a <strong>literal</strong> English translation and what it really <strong>means</strong>. It runs entirely on-device using frameworks built into macOS 26. Its main pieces:</p>
+<ul>
+  <li><strong>Control panel + readiness</strong>: the toggle, and checks for screen permission, WhatsApp and Apple's model.</li>
+  <li><strong>Pipeline</strong>: snapshot WhatsApp, read text, keep Spanish, translate (with a slang glossary), cache.</li>
+  <li><strong>Overlay</strong>: floating tooltip panels placed beside each sticker on every snapshot.</li>
+</ul>
+
+<h2>One action, end to end: a Spanish sticker gets a tooltip</h2>
+<svg viewBox="0 0 820 250" width="100%" role="img" aria-labelledby="dtitle">
+  <title id="dtitle">Flow: WhatsApp window snapshot, then text finder, then language filter and glossary, then translator using Apple's on-device model, then cache, then the tooltip overlay beside the sticker.</title>
+  <defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#57606a"/></marker></defs>
+  <g fill="#f4f6f8" stroke="#d0d7de">
+    <rect x="10" y="20" width="170" height="60" rx="8"/><rect x="220" y="20" width="170" height="60" rx="8"/>
+    <rect x="430" y="20" width="170" height="60" rx="8"/><rect x="640" y="20" width="170" height="60" rx="8"/>
+    <rect x="430" y="150" width="170" height="60" rx="8"/><rect x="220" y="150" width="170" height="60" rx="8"/>
+  </g>
+  <rect x="10" y="150" width="170" height="60" rx="8" fill="#1B1F24"/>
+  <g fill="#1B1F24">
+    <text x="22" y="44">WhatsApp window</text><text x="22" y="64">WindowWatcher.snapshot</text>
+    <text x="232" y="44">Read text, group</text><text x="232" y="64">TextFinder.blocks</text>
+    <text x="442" y="44">Spanish? known slang?</text><text x="442" y="64">LanguageFilter · Glossary</text>
+    <text x="652" y="44">Apple on-device model</text><text x="652" y="64">Translator.translate</text>
+    <text x="442" y="174">Remember result</text><text x="442" y="194">TranslationCache</text>
+    <text x="232" y="174">Place beside sticker</text><text x="232" y="194">OverlayController.show</text>
+  </g>
+  <text x="22" y="174" fill="#9FE3D6" font-weight="bold">LITERAL / MEANING</text><text x="22" y="194" fill="#fff">TooltipView (you see this)</text>
+  <g stroke="#57606a" stroke-width="1.5" marker-end="url(#a)" fill="none">
+    <path d="M180,50 H218"/><path d="M390,50 H428"/><path d="M600,50 H638"/>
+    <path d="M725,80 V180 H602"/><path d="M430,180 H392"/><path d="M220,180 H182"/>
+  </g>
+  <text x="250" y="235" fill="#57606a">LivePipeline.tick runs this loop about 3 times per second.</text>
+</svg>
+
+<h2>Reference route (3 stops)</h2>
+<p>A suggested path through the code. Open the project in your editor and search for each anchor.</p>
+<ol class="route">
+  <li><strong>The loop</strong>: <code>Sources/StickerTranslator/Pipeline/LivePipeline.swift</code>, search <code>func tick</code>.
+    <br>Each snapshot: read the blocks, skip non-Spanish text, start translating text seen twice in a row, then hand every visible tooltip to the overlay. "Re-scan, don't track" lives here.</li>
+  <li><strong>The kernel: explaining the joke</strong>: <code>Sources/StickerTranslator/Pipeline/Translator.swift</code>, search <code>func translate</code> and <code>static let instructions</code>; plus <code>Pipeline/slang-glossary.json</code>.
+    <br>Glossary notes (and a "playful spelling" hint) go into the prompt for Apple's on-device model; the two-line reply is parsed into LITERAL and MEANING, with one retry if it copied the Spanish.</li>
+  <li><strong>Where the tooltip appears</strong>: <code>Sources/StickerTranslator/Overlay/OverlayController.swift</code>, search <code>static func screenRect</code> and <code>func show</code>.
+    <br>Converts Vision's 0–1 box (bottom-left origin) into a screen position, then places the panel to the right of the text, or on the left if there's no room.</li>
+</ol>
+
+<h2>To change this, start here</h2>
+<table>
+  <tr><th>You want to…</th><th>Start at</th></tr>
+  <tr><td>Teach it new slang or a playful spelling</td><td><code>Pipeline/slang-glossary.json</code> (add <code>"playful": true</code> for deliberate misspellings)</td></tr>
+  <tr><td>Change how the model explains things</td><td><code>Translator.swift</code> → <code>static let instructions</code></td></tr>
+  <tr><td>Change the tooltip's look or wording</td><td><code>Overlay/TooltipView.swift</code></td></tr>
+  <tr><td>Make the Spanish check stricter or looser</td><td><code>LanguageFilter.swift</code> → <code>static let threshold</code></td></tr>
+  <tr><td>Ignore more WhatsApp labels (times, ticks)</td><td><code>TextFinder.swift</code> → <code>static func isChatChrome</code></td></tr>
+  <tr><td>Snapshot more or less often</td><td><code>LivePipeline.swift</code> → <code>.milliseconds(333)</code></td></tr>
+  <tr><td>Change the status-line messages</td><td><code>Readiness.swift</code> → <code>var message</code></td></tr>
+</table>
+
+<h2>A practice to reuse</h2>
+<div class="note">
+  <p><strong>Test the riskiest assumption first, with real inputs, through a small harness, before building the interface.</strong></p>
+  <p>The spec flagged on-device explanation quality as the main risk (<code>spec.md &gt; Decisions and Open Issues</code>). Build step 1 was therefore a command-line check (<code>--check &lt;image&gt;</code>, in <code>DevCheck.swift</code>), not the overlay. It showed the model confidently explaining "qué oso" as "How cool!" and "aguas" as "I'm thirsty", which led to the slang-glossary decision before any UI depended on the model. Later, the same harness separated two possible causes when "ola wen dia" got no tooltip: the language filter (3% Spanish), not the model.</p>
+  <p>On another project: write down the one assumption that would sink it, build the smallest runnable thing that exercises exactly that with real examples, and keep it around as a debugging tool.</p>
+</div>
+
+<h2>Run it again</h2>
+<pre>./scripts/run.sh                                   # build, sign, open the app
+swift run StickerTranslator --check samples/*.png   # pipeline only, no WhatsApp needed</pre>
+<details>
+  <summary>Dev flags</summary>
+  <p><code>open build/StickerTranslator.app --args --start</code> turns the toggle on at launch; <code>--simulate-failure</code> makes each sticker's first translation fail so ↻ Retry can be tried. See <code>README.md</code>.</p>
+</details>
+</body>
+</html>

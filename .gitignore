@@ -14,3 +14,9 @@
 # Learner's own sticker images (kept local)
 /samples/cuantemelo-todo.png
 /samples/no-dios.png
+
+# Agent skill tooling (not part of the project)
+/.agents/
+/agent/
+/.claude/
+/skills-lock.json

@@ -23,10 +23,10 @@ Nothing to click. It just keeps working as the conversation goes on.
 ## Inspiration & Identity
 - **Cluely-style transparent overlay:** it sits on top of the app instead of being a separate tool.
 - **A label next to the image,** not drawn over it. The original sticker stays visible.
-- **Fun and personal:** the demo should be a funny exchange between the learner and their girlfriend.
+- **Fun and personal:** the demo should be a funny exchange between the learner and their friend.
 
 ## Why This Matters to the Learner
-A real, everyday annoyance: "some of the stickers are in Spanish and I don't have a tool that instantly translates" them when chatting with their Mexican girlfriend. Hackathon goal: stand out to non-expert judges and win a share of the prize money. This idea is instantly understandable. It also touches their interest in running AI models locally on a device.
+A real, everyday annoyance: "some of the stickers are in Spanish and I don't have a tool that instantly translates" them when chatting with their Mexican friend. Hackathon goal: stand out to non-expert judges and win a share of the prize money. This idea is instantly understandable. It also touches their interest in running AI models locally on a device.
 
 ## What "Working" Looks Like
 WhatsApp Desktop is open on the Mac and the toggle is on. A funny exchange plays out. She sends a Spanish sticker, and a moment later a label appears next to it with the translation and the slang explained, all without the learner touching anything.
@@ -60,5 +60,5 @@ WhatsApp Desktop is open on the Mac and the toggle is on. A funny exchange plays
 - **Agent-friendly websites:** secondhand idea (from a reel).
 
 ## Notes for Later Phases
-- The demo video will be public and show a real chat. Stage an exchange the girlfriend is comfortable sharing.
+- The demo video will be public and show a real chat. Stage an exchange the friend is comfortable sharing.
 - On-device explanation quality is the main risk. `4-spec` should check which local models fit on the learner's MacBook Air M4.

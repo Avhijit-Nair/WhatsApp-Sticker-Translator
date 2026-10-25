@@ -51,7 +51,7 @@ Verified on the learner's Mac (2026-10-02): `SystemLanguageModel.default.availab
 - **Demo recording:** WhatsApp Desktop on one side with a staged, funny Spanish-sticker exchange in English text, and the control panel on the other. Turn on the toggle and the panel hides. A sticker arrives, "Translating…" appears, then the literal translation and meaning. Scroll to show the tooltip following and hiding. Close one with ✕. Optionally turn off Wi-Fi to show it still works.
 - **Submission:** demo video + public GitHub repo. **No deployment and no downloadable app:** distributing a signed, notarized app needs a paid Apple Developer account (learner agreed).
 - **Public repo:** https://github.com/Avhijit-Nair/WhatsApp-Sticker-Translator
-- **Demo video:** _edited (v4), awaiting upload_
+- **Demo video:** https://youtu.be/YijCi-7z2PY
 
 ## Look and Feel
 From `prd.md > Look and Feel`, `scope.md > Inspiration & Identity`.

@@ -20,3 +20,7 @@
 /agent/
 /.claude/
 /skills-lock.json
+
+# Screen recordings (raw footage shows personal info)
+*.mp4
+*.mov
